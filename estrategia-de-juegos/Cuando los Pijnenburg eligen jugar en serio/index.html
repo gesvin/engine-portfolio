@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AAE · Teoría de juegos en la gobernanza corporativa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --surface: #ffffff;
+      --line-soft: #e9e3d6;
+      --line: #d8cfb8;
+      --text-primary: #14171e;
+      --text-secondary: #3a4256;
+      --text-muted: #7c7a72;
+
+      --accent: #c97b3f;             /* cobre · familia + hightech */
+      --accent-soft: rgba(201, 123, 63, 0.08);
+      --accent-strong: #a35f29;
+
+      --c-game: #b06367;             /* teoría de juegos */
+      --c-tech: #2f6f5e;             /* tecnología */
+      --c-power: #4a4e69;            /* poder */
+      --c-incentive: #4a6741;        /* incentivos */
+      --c-vertical: #6b5b95;         /* integración vertical */
+
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 16px -2px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      margin: 0;
+      line-height: 1.62;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .font-serif { font-family: 'DM Serif Display', serif; font-weight: 400; letter-spacing: -0.005em; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 64px 24px; }
+    @media (min-width: 768px) { .container { padding: 96px 40px; } }
+
+    /* Hero gradient corner */
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse at top right, rgba(201,123,63,0.06), transparent 50%),
+        radial-gradient(ellipse at bottom left, rgba(176,99,103,0.04), transparent 50%);
+    }
+
+    main { position: relative; z-index: 1; }
+
+    /* ---- Hero ---- */
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em;
+      color: var(--accent); margin-bottom: 28px;
+    }
+    .eyebrow::before { content: ""; width: 32px; height: 1px; background: var(--accent); }
+
+    h1.hero-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.5rem, 5vw + 1rem, 4.8rem);
+      line-height: 1.04;
+      letter-spacing: -0.015em;
+      margin: 0 0 28px 0;
+      max-width: 18ch;
+    }
+    h1.hero-title em {
+      font-style: italic; color: var(--accent); font-weight: 400;
+    }
+
+    .lede {
+      font-size: clamp(1.05rem, 1vw + 0.85rem, 1.3rem);
+      color: var(--text-secondary);
+      max-width: 64ch;
+      margin: 0 0 56px 0;
+    }
+
+    .stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px 40px;
+      border-top: 1px solid var(--line-soft);
+      border-bottom: 1px solid var(--line-soft);
+      padding: 36px 0;
+    }
+    @media (min-width: 768px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 2.5vw + 1rem, 2.8rem);
+      line-height: 1; color: var(--text-primary); margin-bottom: 8px;
+    }
+    .stat-num .accent { color: var(--accent); }
+    .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--text-muted);
+    }
+
+    /* ---- Section base ---- */
+    section { margin-top: 96px; }
+    section .eyebrow { margin-bottom: 14px; }
+    section h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 2vw + 1rem, 3rem);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      margin: 0 0 20px 0;
+      max-width: 22ch;
+    }
+    section h2 em { font-style: italic; color: var(--accent); }
+    section .intro {
+      font-size: 1.08rem; color: var(--text-secondary);
+      max-width: 68ch; margin: 0 0 48px 0;
+    }
+
+    /* ---- Timeline ---- */
+    .timeline { position: relative; padding-left: 56px; }
+    .timeline::before {
+      content: ""; position: absolute; left: 22px; top: 8px; bottom: 8px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--c-game) 100%);
+    }
+    .t-step { position: relative; padding-bottom: 36px; }
+    .t-step:last-child { padding-bottom: 0; }
+    .t-dot {
+      position: absolute; left: -56px; top: 0;
+      width: 46px; height: 46px; border-radius: 50%;
+      background: white; border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      font-weight: 500; color: var(--accent);
+    }
+    .t-step.t-game .t-dot { border-color: var(--c-game); color: var(--c-game); }
+    .t-step.t-tech .t-dot { border-color: var(--c-tech); color: var(--c-tech); }
+    .t-step.t-power .t-dot { border-color: var(--c-power); color: var(--c-power); }
+    .t-year {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      color: var(--text-muted); margin-bottom: 6px;
+    }
+    .t-title {
+      font-family: 'DM Serif Display', serif; font-size: 1.4rem;
+      margin: 0 0 8px 0; line-height: 1.2;
+    }
+    .t-body { color: var(--text-secondary); max-width: 60ch; margin: 0; }
+
+    /* ---- Diagram block ---- */
+    .diagram {
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+    @media (min-width: 768px) { .diagram { padding: 48px; } }
+
+    .diagram-caption {
+      margin-top: 16px; font-size: 13px; color: var(--text-muted);
+      font-style: italic; text-align: center;
+    }
+
+    /* ---- Dimension cards (game theory 4) ---- */
+    .dim {
+      margin-top: 88px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    @media (min-width: 1024px) {
+      .dim { grid-template-columns: 200px 1fr; gap: 64px; align-items: start; }
+    }
+
+    .dim-head {
+      position: relative;
+      padding-top: 8px;
+    }
+    .dim-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: 0.18em;
+      color: var(--text-muted); text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .dim-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem; line-height: 1.1;
+      margin: 0 0 12px 0;
+    }
+    .dim-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: white; padding: 5px 10px; border-radius: 999px;
+    }
+
+    /* The 4 dimensions each have a color */
+    .dim[data-c="incentive"] .dim-tag { background: var(--c-incentive); }
+    .dim[data-c="incentive"] h3, .dim[data-c="incentive"] .dim-title em { color: var(--c-incentive); }
+    .dim[data-c="vertical"] .dim-tag { background: var(--c-vertical); }
+    .dim[data-c="vertical"] h3, .dim[data-c="vertical"] .dim-title em { color: var(--c-vertical); }
+    .dim[data-c="voting"] .dim-tag { background: var(--c-game); }
+    .dim[data-c="voting"] h3, .dim[data-c="voting"] .dim-title em { color: var(--c-game); }
+    .dim[data-c="power"] .dim-tag { background: var(--c-power); }
+    .dim[data-c="power"] h3, .dim[data-c="power"] .dim-title em { color: var(--c-power); }
+
+    .dim h3 {
+      font-family: 'Outfit', sans-serif; font-weight: 600;
+      font-size: 1.1rem; margin: 24px 0 8px 0;
+    }
+    .dim p { color: var(--text-secondary); margin: 0 0 14px 0; }
+    .dim p strong { color: var(--text-primary); font-weight: 600; }
+
+    .kv-card {
+      background: var(--surface);
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 4px 0;
+      margin-top: 18px;
+    }
+    .kv-row {
+      display: grid; grid-template-columns: 130px 1fr; gap: 12px;
+      padding: 10px 18px; border-bottom: 1px dashed var(--line-soft);
+      font-size: 14px;
+    }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-row .k { font-weight: 500; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .kv-row .v { color: var(--text-primary); }
+
+    /* ---- Bench bars (KPI mix) ---- */
+    .bench { margin-top: 14px; }
+    .bench-row {
+      display: grid; grid-template-columns: 160px 1fr 60px; gap: 14px;
+      align-items: center; padding: 8px 0; font-size: 14px;
+    }
+    .bar-bg { height: 18px; background: var(--line-soft); border-radius: 6px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 6px; }
+    .bench-row .val { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-secondary); text-align: right; }
+    .bench-row .label { color: var(--text-primary); }
+
+    /* ---- Banzhaf table ---- */
+    .banzhaf { margin-top: 20px; }
+    .banzhaf table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .banzhaf th, .banzhaf td {
+      padding: 10px 14px; text-align: left;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .banzhaf th {
+      font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted); font-weight: 500;
+    }
+    .banzhaf td.power { font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+    .banzhaf tr:last-child td { border-bottom: none; }
+    .banzhaf .member-name { font-weight: 500; color: var(--text-primary); }
+    .banzhaf .member-role { color: var(--text-muted); font-size: 12px; }
+    .pow-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--c-game); margin-right: 4px;
+    }
+
+    /* ---- Decision-rights matrix ---- */
+    .rights-matrix { margin-top: 20px; }
+    .rights-row {
+      display: grid; grid-template-columns: 1fr 80px 80px 80px 80px;
+      gap: 0; align-items: center;
+      border-bottom: 1px solid var(--line-soft);
+      padding: 14px 0; font-size: 14px;
+    }
+    .rights-row:last-child { border-bottom: none; }
+    .rights-row .rname { font-weight: 500; }
+    .rights-row .rdesc { color: var(--text-muted); font-size: 12.5px; margin-top: 2px; }
+    .rights-row .cell {
+      text-align: center; font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .rights-row .cell.active { color: var(--c-power); font-weight: 600; }
+    .rights-row .cell.unanimous { color: var(--accent); font-weight: 600; }
+    .rights-head {
+      display: grid; grid-template-columns: 1fr 80px 80px 80px 80px;
+      padding-bottom: 10px; border-bottom: 1px solid var(--text-primary);
+      font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted); font-weight: 500;
+    }
+    .rights-head span { text-align: center; }
+    .rights-head span:first-child { text-align: left; }
+
+    /* ---- Synthesis ---- */
+    .synthesis {
+      background: linear-gradient(135deg, rgba(201,123,63,0.06), rgba(176,99,103,0.04));
+      border: 1px solid var(--line-soft);
+      border-radius: 20px;
+      padding: 40px 32px;
+      margin-top: 96px;
+    }
+    @media (min-width: 768px) { .synthesis { padding: 56px 56px; } }
+    .synthesis h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 1.5vw + 1rem, 2.6rem);
+      margin: 0 0 24px 0; line-height: 1.15;
+    }
+    .synthesis p { color: var(--text-secondary); margin: 0 0 16px 0; max-width: 68ch; }
+    .equilibria {
+      display: grid; grid-template-columns: 1fr; gap: 12px;
+      margin-top: 28px;
+    }
+    @media (min-width: 768px) { .equilibria { grid-template-columns: 1fr 1fr; } }
+    .eq-card {
+      background: white;
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      padding: 20px 22px;
+    }
+    .eq-card .eq-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .eq-card .eq-name {
+      font-family: 'DM Serif Display', serif; font-size: 1.2rem;
+      margin: 0 0 8px 0;
+    }
+    .eq-card p { font-size: 14px; color: var(--text-secondary); margin: 0; }
+
+    /* ---- Footer ---- */
+    footer {
+      margin-top: 96px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line-soft);
+      font-size: 13px; color: var(--text-muted);
+      display: flex; flex-wrap: wrap; gap: 16px;
+      justify-content: space-between; align-items: center;
+    }
+
+    /* SVG diagram styles */
+    .gov-svg text { font-family: 'Outfit', sans-serif; }
+    .gov-svg .tier-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+      letter-spacing: 0.14em; text-transform: uppercase; fill: var(--text-muted);
+    }
+    .gov-svg .actor-name { font-weight: 600; font-size: 14px; fill: var(--text-primary); }
+    .gov-svg .actor-sub { font-size: 11px; fill: var(--text-muted); }
+    .gov-svg .actor-italic { font-size: 10.5px; fill: var(--text-muted); font-style: italic; }
+  </style>
+</head>
+<body>
+  <main class="container">
+
+    <!-- ============ HERO ============ -->
+    <header>
+      <span class="eyebrow">Estudio de caso · gobernanza corporativa</span>
+      <h1 class="hero-title">
+        Cuando los Pijnenburg eligen <em>jugar en serio</em>
+      </h1>
+      <p class="lede">
+        Manon asume la CEO de AAE el 1 de julio de 2026, en una empresa que dejó
+        de ser una pyme familiar y ya juega en €1B con ASML, Thermo Fisher,
+        Pfizer y Eli Lilly. Esta es la lectura del nuevo equilibrio en cuatro
+        movimientos de teoría de juegos.
+      </p>
+
+      <div class="stats">
+        <div>
+          <div class="stat-num">€150M <span class="accent">→</span> €1B</div>
+          <div class="stat-label">facturación objetivo</div>
+        </div>
+        <div>
+          <div class="stat-num">550 <span class="accent">→</span> 1.000</div>
+          <div class="stat-label">empleados en Helmond</div>
+        </div>
+        <div>
+          <div class="stat-num">1976 <span style="color:var(--text-muted);font-size:0.5em;">·</span> 50 años</div>
+          <div class="stat-label">William Pijnenburg funda AAE</div>
+        </div>
+        <div>
+          <div class="stat-num"><span class="accent">3 + 1</span></div>
+          <div class="stat-label">propietarios: madre, Manon, Mark, Koen</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ TIMELINE ============ -->
+    <section>
+      <span class="eyebrow">Línea del tiempo</span>
+      <h2>Diez años entre <em>dos CEOs</em></h2>
+      <p class="intro">
+        El fallecimiento de William en julio de 2016 obligó a la familia a
+        pasar de un equilibrio de un solo jugador a un juego de cuatro
+        propietarios. Cada hito posterior es una decisión de governance con
+        implicaciones de teoría de juegos.
+      </p>
+
+      <div class="timeline">
+        <div class="t-step">
+          <div class="t-dot">1976</div>
+          <div class="t-year">era William</div>
+          <h3 class="t-title">William funda AAE</h3>
+          <p class="t-body">Advanced Automated Equipment en Helmond. Una mecatrónica
+            familiar que en cinco décadas acaba dependiendo de ASML, Pfizer y Eli Lilly.</p>
+        </div>
+
+        <div class="t-step t-game">
+          <div class="t-dot">'95</div>
+          <div class="t-year">primer movimiento vertical</div>
+          <h3 class="t-title">AAE adquiere Grauel GmbH (Berlín)</h3>
+          <p class="t-body">Integración vertical europea. Comienza el juego de
+            <em>hold-up</em> resuelto desde dentro: la pieza crítica se hace
+            propia, no se subcontrata.</p>
+        </div>
+
+        <div class="t-step t-power">
+          <div class="t-dot">'16</div>
+          <div class="t-year">shock exógeno</div>
+          <h3 class="t-title">Fallece William · familia asume</h3>
+          <p class="t-body">Esposa y tres hijos (Manon, Mark, Koen) toman las riendas.
+            Aparece un principal colectivo con información asimétrica entre
+            los cuatro propietarios.</p>
+        </div>
+
+        <div class="t-step">
+          <div class="t-dot">'16</div>
+          <div class="t-year">director externo</div>
+          <h3 class="t-title">Frank Mulders entra como CEO</h3>
+          <p class="t-body">Un agente profesional cierra el vacío. La familia se
+            reserva derechos de propiedad; Mulders, derechos de decisión operativa.
+            Equilibrio de delegación clásico (Aghion–Tirole).</p>
+        </div>
+
+        <div class="t-step t-game">
+          <div class="t-dot">'24</div>
+          <div class="t-year">pre-sucesión</div>
+          <h3 class="t-title">Manon es Chief Strategy &amp; Culture</h3>
+          <p class="t-body">Empieza el signaling: la candidata envía señales de
+            competence antes de competir formalmente por el puesto. Equilibrio
+            de señalización costosa.</p>
+        </div>
+
+        <div class="t-step t-tech">
+          <div class="t-dot">'26</div>
+          <div class="t-year">nueva nave</div>
+          <h3 class="t-title">AAE anuncia expansión (€1B / 1.000 empleados)</h3>
+          <p class="t-body">Make-or-buy de capacidad productiva. Las decisiones
+            aquí se cruzan con la decisión de sucesión: ¿invierte AAE en
+            capacidad antes o después de cerrar la transición?</p>
+        </div>
+
+        <div class="t-step t-power">
+          <div class="t-dot" style="border-color:var(--accent);color:var(--accent);">7/26</div>
+          <div class="t-year">sucesión efectiva</div>
+          <h3 class="t-title">Manon asume como CEO</h3>
+          <p class="t-body">Mulders baja a VP Global Operations. Es un
+            <em>separating equilibrium</em> creíble: el ex-CEO acepta la
+            transición sin amenazar con salirse. Executive Board se recompone.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GOVERNANCE DIAGRAM ============ -->
+    <section>
+      <span class="eyebrow">Estructura</span>
+      <h2>Cuatro capas de <em>poder</em></h2>
+      <p class="intro">
+        AAE articula la propiedad familiar, el family council, el executive
+        board y las operaciones como cuatro capas con derechos de decisión
+        diferenciados. Las líneas continuas son autoridad formal; las
+        discontinuas, autoridad real o derecho de veto.
+      </p>
+
+      <div class="diagram">
+        <svg class="gov-svg" viewBox="0 0 980 720" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+          <!-- Tier labels -->
+          <text class="tier-label" x="0" y="50">Propietarios</text>
+          <text class="tier-label" x="0" y="220">Family council</text>
+          <text class="tier-label" x="0" y="340">Executive board</text>
+          <text class="tier-label" x="0" y="510">Operaciones</text>
+
+          <!-- Vertical separator -->
+          <line x1="155" y1="20" x2="155" y2="700" stroke="#e9e3d6" stroke-width="1" stroke-dasharray="2 4"/>
+
+          <!-- Tier 1: Owners -->
+          <g transform="translate(180, 25)">
+            <rect width="135" height="76" rx="10" fill="#fef3e7" stroke="#c97b3f" stroke-width="1.5"/>
+            <text class="actor-name" x="67.5" y="28" text-anchor="middle">Madre</text>
+            <text class="actor-sub" x="67.5" y="48" text-anchor="middle">viuda fundadora</text>
+            <text class="actor-italic" x="67.5" y="64" text-anchor="middle">voto · veto identitario</text>
+          </g>
+          <g transform="translate(335, 25)">
+            <rect width="135" height="76" rx="10" fill="#fef3e7" stroke="#c97b3f" stroke-width="1.5"/>
+            <text class="actor-name" x="67.5" y="28" text-anchor="middle">Manon</text>
+            <text class="actor-sub" x="67.5" y="48" text-anchor="middle">CEO desde jul 2026</text>
+            <text class="actor-italic" x="67.5" y="64" text-anchor="middle">doble rol · owner + agent</text>
+          </g>
+          <g transform="translate(490, 25)">
+            <rect width="135" height="76" rx="10" fill="#fef3e7" stroke="#c97b3f" stroke-width="1.5"/>
+            <text class="actor-name" x="67.5" y="28" text-anchor="middle">Mark</text>
+            <text class="actor-sub" x="67.5" y="48" text-anchor="middle">co-propietario</text>
+            <text class="actor-italic" x="67.5" y="64" text-anchor="middle">voto · bloque potencial</text>
+          </g>
+          <g transform="translate(645, 25)">
+            <rect width="135" height="76" rx="10" fill="#fef3e7" stroke="#c97b3f" stroke-width="1.5"/>
+            <text class="actor-name" x="67.5" y="28" text-anchor="middle">Koen</text>
+            <text class="actor-sub" x="67.5" y="48" text-anchor="middle">co-propietario</text>
+            <text class="actor-italic" x="67.5" y="64" text-anchor="middle">voto · bloque potencial</text>
+          </g>
+          <g transform="translate(800, 25)">
+            <rect width="135" height="76" rx="10" fill="#fff8ec" stroke="#c97b3f" stroke-width="1" stroke-dasharray="3 2"/>
+            <text class="actor-name" x="67.5" y="28" text-anchor="middle" style="fill:var(--accent);">¿sucesión</text>
+            <text class="actor-sub" x="67.5" y="48" text-anchor="middle">3ª generación</text>
+            <text class="actor-italic" x="67.5" y="64" text-anchor="middle">pre-commitment</text>
+          </g>
+
+          <!-- Lines down to family council -->
+          <line x1="395" y1="105" x2="395" y2="180" stroke="#c97b3f" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <line x1="550" y1="105" x2="550" y2="180" stroke="#c97b3f" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <line x1="705" y1="105" x2="705" y2="180" stroke="#c97b3f" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <line x1="247" y1="105" x2="247" y2="180" stroke="#c97b3f" stroke-width="1.2" stroke-dasharray="4 3"/>
+
+          <!-- Tier 2: Family Council -->
+          <g transform="translate(360, 190)">
+            <rect width="320" height="56" rx="10" fill="#f5ede0" stroke="#c97b3f" stroke-width="1.5"/>
+            <text class="actor-name" x="160" y="26" text-anchor="middle">Family Council · protocolo familiar</text>
+            <text class="actor-sub" x="160" y="46" text-anchor="middle">derechos identitarios · unanimidad para venta / sede</text>
+          </g>
+
+          <!-- Line down to executive board -->
+          <line x1="520" y1="250" x2="520" y2="305" stroke="#2f6f5e" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+          <!-- Tier 3: Executive Board -->
+          <g transform="translate(180, 320)">
+            <rect width="150" height="100" rx="10" fill="#e8f0ec" stroke="#2f6f5e" stroke-width="1.5"/>
+            <text class="actor-name" x="75" y="32" text-anchor="middle" style="font-size:13px;">Manon</text>
+            <text class="actor-name" x="75" y="48" text-anchor="middle" style="font-size:13px;">Pijnenburg</text>
+            <text class="actor-sub" x="75" y="68" text-anchor="middle">CEO · formal authority</text>
+            <text class="actor-italic" x="75" y="86" text-anchor="middle" style="fill:var(--c-incentive);">principal-agent node</text>
+          </g>
+          <g transform="translate(345, 320)">
+            <rect width="150" height="100" rx="10" fill="#e8f0ec" stroke="#2f6f5e" stroke-width="1.5"/>
+            <text class="actor-name" x="75" y="32" text-anchor="middle">Leon Verweijen</text>
+            <text class="actor-sub" x="75" y="52" text-anchor="middle">Executive Board</text>
+            <text class="actor-sub" x="75" y="68" text-anchor="middle">supply chain</text>
+            <text class="actor-italic" x="75" y="86" text-anchor="middle" style="fill:var(--c-game);">info advantage</text>
+          </g>
+          <g transform="translate(510, 320)">
+            <rect width="150" height="100" rx="10" fill="#e8f0ec" stroke="#2f6f5e" stroke-width="1.5"/>
+            <text class="actor-name" x="75" y="32" text-anchor="middle">Kurt Wils</text>
+            <text class="actor-sub" x="75" y="52" text-anchor="middle">Executive Board</text>
+            <text class="actor-sub" x="75" y="68" text-anchor="middle">finance / legal</text>
+            <text class="actor-italic" x="75" y="86" text-anchor="middle" style="fill:var(--c-game);">info advantage</text>
+          </g>
+          <g transform="translate(675, 320)">
+            <rect width="170" height="100" rx="10" fill="#fff0e8" stroke="#c97b3f" stroke-width="1.5" stroke-dasharray="4 2"/>
+            <text class="actor-name" x="85" y="32" text-anchor="middle">Frank Mulders</text>
+            <text class="actor-sub" x="85" y="52" text-anchor="middle">VP Global Operations</text>
+            <text class="actor-sub" x="85" y="68" text-anchor="middle">Director AAE Europa</text>
+            <text class="actor-italic" x="85" y="86" text-anchor="middle" style="fill:var(--accent);">ex-CEO · separating eq.</text>
+          </g>
+
+          <!-- Lines from executive board down -->
+          <line x1="255" y1="425" x2="255" y2="490" stroke="#2f6f5e" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <line x1="420" y1="425" x2="420" y2="490" stroke="#2f6f5e" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <line x1="585" y1="425" x2="585" y2="490" stroke="#2f6f5e" stroke-width="1.2" stroke-dasharray="4 3"/>
+
+          <!-- Tier 4: Operations -->
+          <g transform="translate(165, 500)">
+            <rect width="180" height="84" rx="10" fill="#f4f1ea" stroke="#7c7a72" stroke-width="1"/>
+            <text class="actor-name" x="90" y="30" text-anchor="middle">Helmond HQ</text>
+            <text class="actor-sub" x="90" y="50" text-anchor="middle">~550 empleados</text>
+            <text class="actor-sub" x="90" y="66" text-anchor="middle">chip + médico</text>
+          </g>
+          <g transform="translate(360, 500)">
+            <rect width="180" height="84" rx="10" fill="#f4f1ea" stroke="#7c7a72" stroke-width="1"/>
+            <text class="actor-name" x="90" y="30" text-anchor="middle">Grauel GmbH</text>
+            <text class="actor-sub" x="90" y="50" text-anchor="middle">Berlín · desde 1995</text>
+            <text class="actor-sub" x="90" y="66" text-anchor="middle" style="fill:var(--c-vertical);">integración vertical</text>
+          </g>
+          <g transform="translate(555, 500)">
+            <rect width="180" height="84" rx="10" fill="#f4f1ea" stroke="#7c7a72" stroke-width="1"/>
+            <text class="actor-name" x="90" y="30" text-anchor="middle">Nueva nave</text>
+            <text class="actor-sub" x="90" y="50" text-anchor="middle">expansión anunciada</text>
+            <text class="actor-sub" x="90" y="66" text-anchor="middle" style="fill:var(--c-vertical);">make-or-buy decision</text>
+          </g>
+
+          <!-- Side legend -->
+          <g transform="translate(770, 500)">
+            <rect width="190" height="200" rx="10" fill="#fafaf6" stroke="#e9e3d6"/>
+            <text x="14" y="24" class="tier-label" style="font-size:10px;">Leyenda</text>
+            <line x1="14" y1="50" x2="40" y2="50" stroke="#c97b3f" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text x="50" y="54" font-size="11" fill="#3a4256">autoridad real / veto</text>
+            <line x1="14" y1="78" x2="40" y2="78" stroke="#2f6f5e" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <text x="50" y="82" font-size="11" fill="#3a4256">autoridad formal delegada</text>
+            <rect x="14" y="98" width="26" height="14" rx="3" fill="#fef3e7" stroke="#c97b3f"/>
+            <text x="50" y="110" font-size="11" fill="#3a4256">familia propietaria</text>
+            <rect x="14" y="124" width="26" height="14" rx="3" fill="#e8f0ec" stroke="#2f6f5e"/>
+            <text x="50" y="136" font-size="11" fill="#3a4256">management profesional</text>
+            <rect x="14" y="150" width="26" height="14" rx="3" fill="#fff0e8" stroke="#c97b3f" stroke-dasharray="3 2"/>
+            <text x="50" y="162" font-size="11" fill="#3a4256">rol dual / señalización</text>
+            <text x="14" y="190" font-size="10" fill="#7c7a72" font-style="italic">veto players en AAE: 4</text>
+          </g>
+        </svg>
+        <div class="diagram-caption">
+          Figura 1 · Cuatro capas de governance. La autoridad formal baja por la línea verde discontinua; la autoridad real (incluido el veto) sube por la línea cobriza.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GAME THEORY 4 DIMENSIONS ============ -->
+    <section>
+      <span class="eyebrow">Teoría de juegos</span>
+      <h2>Cuatro movimientos <em>del juego</em></h2>
+      <p class="intro">
+        Cada decisión de Manon al frente de AAE es un equilibrio entre
+        jugadores con información asimétrica, objetivos parcialmente alineados
+        y derecho a veto. Estos son los cuatro ejes donde la teoría de juegos
+        ofrece herramientas concretas.
+      </p>
+
+      <!-- ============ DIM 1: INCENTIVES ============ -->
+      <article class="dim" data-c="incentive">
+        <div class="dim-head">
+            <div class="dim-num">Movimiento 01</div>
+            <h3 class="dim-title">Esquemas de <em>incentivos</em></h3>
+            <span class="dim-tag">Principal–Agente</span>
+        </div>
+        <div>
+          <h3>El problema</h3>
+          <p>
+            Cuatro propietarios (los Pijnenburg) y un management profesional
+            con información asimétrica sobre su propio esfuerzo. Manon tiene
+            doble rol: es <strong>principal</strong> cuando vota como propietaria
+            y <strong>agente</strong> cuando opera como CEO. Riesgo moral:
+            sus hermanos no observan cuánto empuja cada línea de negocio.
+          </p>
+
+          <h3>Herramientas</h3>
+          <div class="kv-card">
+            <div class="kv-row"><span class="k">Holmstrom–Milgrom</span><span class="v">Contrato lineal: pago = α + β·π. β alto = la familia asume riesgo; β bajo = Manon asume riesgo.</span></div>
+            <div class="kv-row"><span class="k">Tournament theory</span><span class="v">El puesto CEO y dividendos se asignan por ranking entre Manon, Mark y Koen para reducir rivalidad.</span></div>
+            <div class="kv-row"><span class="k">Multitasking</span><span class="v">KPI balanceados para evitar que Manon descuide el negocio médico por perseguir el semiconductor.</span></div>
+            <div class="kv-row"><span class="k">Golden handcuffs</span><span class="v">Vesting plurianual para Frank Mulders como señal de compromiso creíble con la transición.</span></div>
+          </div>
+
+          <h3>Mezcla sugerida de KPI para Manon</h3>
+          <div class="bench">
+            <div class="bench-row">
+              <span class="label">Crecimiento EBITDA</span>
+              <div class="bar-bg"><div class="bar-fill" style="width:60%;background:linear-gradient(90deg,#4a6741,#6b8a5e);"></div></div>
+              <span class="val">60%</span>
+            </div>
+            <div class="bench-row">
+              <span class="label">Diversificación mix cliente</span>
+              <div class="bar-bg"><div class="bar-fill" style="width:15%;background:linear-gradient(90deg,#4a6741,#6b8a5e);"></div></div>
+              <span class="val">15%</span>
+            </div>
+            <div class="bench-row">
+              <span class="label">Retención talento clave</span>
+              <div class="bar-bg"><div class="bar-fill" style="width:12%;background:linear-gradient(90deg,#4a6741,#6b8a5e);"></div></div>
+              <span class="val">12%</span>
+            </div>
+            <div class="bench-row">
+              <span class="label">Sucesión completada</span>
+              <div class="bar-bg"><div class="bar-fill" style="width:8%;background:linear-gradient(90deg,#4a6741,#6b8a5e);"></div></div>
+              <span class="val">8%</span>
+            </div>
+            <div class="bench-row">
+              <span class="label">Innovación / patentes</span>
+              <div class="bar-bg"><div class="bar-fill" style="width:5%;background:linear-gradient(90deg,#4a6741,#6b8a5e);"></div></div>
+              <span class="val">5%</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============ DIM 2: VERTICAL INTEGRATION ============ -->
+      <article class="dim" data-c="vertical">
+        <div class="dim-head">
+            <div class="dim-num">Movimiento 02</div>
+            <h3 class="dim-title">Integración <em>vertical</em></h3>
+            <span class="dim-tag">Hold-up · Make-or-buy</span>
+        </div>
+        <div>
+          <h3>El problema</h3>
+          <p>
+            AAE diseña módulos críticos para ASML, Thermo Fisher, Pfizer y
+            Eli Lilly. Las inversiones específicas en la relación (capacidades
+            adaptadas al cliente) crean <strong>cuasi-rentas</strong> que
+            cualquiera de las dos partes puede intentar expropiar. La decisión
+            de cuánto producir internamente y cuánto subcontratar define el
+            campo de juego.
+          </p>
+
+          <h3>Herramientas</h3>
+          <div class="kv-card">
+            <div class="kv-row"><span class="k">Hold-up problem</span><span class="v">Si AAE externaliza una pieza crítica y adapta su proceso al proveedor, este puede renegociar el precio ex-post.</span></div>
+            <div class="kv-row"><span class="k">MFN clauses</span><span class="v">Contratos "most favored customer" auto-implementables: la desviación es observable.</span></div>
+            <div class="kv-row"><span class="k">Subasta de Vickrey</span><span class="v">Cuando AAE no conoce los costos ocultos del proveedor, puja de segundo precio revela la verdad.</span></div>
+            <div class="kv-row"><span class="k">Screening menu</span><span class="v">Menú {bajo precio/bajo volumen, alto precio/alto volumen} deja al proveedor autodescribirse.</span></div>
+          </div>
+
+          <h3>Make-or-buy de la nueva nave de Helmond</h3>
+          <div class="diagram" style="margin-top:20px;padding:28px;">
+            <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+              <!-- Decision diamond -->
+              <g transform="translate(290, 95)">
+                <polygon points="90,0 180,55 90,110 0,55" fill="white" stroke="#6b5b95" stroke-width="1.5"/>
+                <text x="90" y="48" text-anchor="middle" font-family="Outfit" font-size="12" font-weight="600" fill="#14171e">AAE necesita</text>
+                <text x="90" y="64" text-anchor="middle" font-family="Outfit" font-size="12" font-weight="600" fill="#14171e">subsistema X</text>
+                <text x="90" y="82" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7c7a72">make-or-buy?</text>
+              </g>
+
+              <!-- Arrow left: Buy -->
+              <line x1="290" y1="150" x2="170" y2="200" stroke="#6b5b95" stroke-width="1.5"/>
+              <text x="195" y="180" font-family="JetBrains Mono" font-size="10" fill="#6b5b95">subcontratar</text>
+
+              <g transform="translate(30, 200)">
+                <rect width="140" height="34" rx="6" fill="#efeaf4" stroke="#6b5b95" stroke-width="1"/>
+                <text x="70" y="14" text-anchor="middle" font-family="Outfit" font-size="11" font-weight="500" fill="#14171e">Proveedor externo</text>
+                <text x="70" y="28" text-anchor="middle" font-family="Outfit" font-size="10" fill="#7c7a72">riesgo de hold-up ↑</text>
+              </g>
+
+              <!-- Arrow right: Make -->
+              <line x1="470" y1="150" x2="590" y2="200" stroke="#6b5b95" stroke-width="1.5"/>
+              <text x="540" y="180" font-family="JetBrains Mono" font-size="10" fill="#6b5b95">integrar</text>
+
+              <g transform="translate(590, 200)">
+                <rect width="140" height="34" rx="6" fill="#efeaf4" stroke="#6b5b95" stroke-width="1"/>
+                <text x="70" y="14" text-anchor="middle" font-family="Outfit" font-size="11" font-weight="500" fill="#14171e">Helmond / Grauel</text>
+                <text x="70" y="28" text-anchor="middle" font-family="Outfit" font-size="10" fill="#7c7a72">capacidad ociosa ↓</text>
+              </g>
+
+              <!-- Top: info asymmetry -->
+              <g transform="translate(220, 10)">
+                <rect width="320" height="58" rx="8" fill="#fafaf6" stroke="#d8cfb8"/>
+                <text x="160" y="22" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#7c7a72">información asimétrica</text>
+                <text x="160" y="40" text-anchor="middle" font-family="Outfit" font-size="11" fill="#3a4256">el proveedor conoce su costo, AAE no</text>
+                <line x1="160" y1="68" x2="160" y2="90" stroke="#d8cfb8" stroke-width="1" stroke-dasharray="3 3"/>
+              </g>
+
+              <!-- Bottom note -->
+              <text x="380" y="60" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#7c7a72" font-style="italic">solución: subasta competitiva + MFN + break-up fees</text>
+            </svg>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============ DIM 3: COMMITTEE COMPOSITION ============ -->
+      <article class="dim" data-c="voting">
+        <div class="dim-head">
+            <div class="dim-num">Movimiento 03</div>
+            <h3 class="dim-title">Composición del <em>comité</em></h3>
+            <span class="dim-tag">Voting games</span>
+        </div>
+        <div>
+          <h3>El problema</h3>
+          <p>
+            Executive Board actual: Manon (CEO), Leon Verweijen, Kurt Wils.
+            Antes Frank era CEO; ahora baja a VP Global Operations. La
+            <strong>coalición mínima ganadora</strong> importa tanto como el
+            voto formal: ¿quién tiene información asimétrica que cambia el
+            equilibrio?
+          </p>
+
+          <h3>Índice de poder Banzhaf (ilustrativo)</h3>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">
+            Cálculo indicativo de cuántas veces cada miembro es pivote en una
+            decisión tipo 2 (estratégica, €5M–€50M) bajo regla de mayoría
+            simple del Executive Board.
+          </p>
+          <div class="banzhaf">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Miembro</th>
+                  <th style="width:25%;">Voto</th>
+                  <th style="width:25%;">Poder Banzhaf</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="member-name">Manon Pijnenburg</div><div class="member-role">CEO · chair</div></td>
+                  <td class="power">1</td>
+                  <td class="power"><span class="pow-dot"></span><span class="pow-dot"></span><span class="pow-dot"></span> 0.375</td>
+                </tr>
+                <tr>
+                  <td><div class="member-name">Leon Verweijen</div><div class="member-role">Executive Board · supply chain</div></td>
+                  <td class="power">1</td>
+                  <td class="power"><span class="pow-dot"></span><span class="pow-dot"></span> 0.250</td>
+                </tr>
+                <tr>
+                  <td><div class="member-name">Kurt Wils</div><div class="member-role">Executive Board · finance / legal</div></td>
+                  <td class="power">1</td>
+                  <td class="power"><span class="pow-dot"></span><span class="pow-dot"></span> 0.250</td>
+                </tr>
+                <tr>
+                  <td><div class="member-name">Frank Mulders</div><div class="member-role">VP Global Ops · advisor</div></td>
+                  <td class="power">0*</td>
+                  <td class="power" style="color:var(--text-muted);">consulta</td>
+                </tr>
+              </tbody>
+            </table>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:12px;">
+              * Frank tiene voto consultivo; su poder real está en la
+              información que retiene sobre clientes y proveedores históricos.
+              Es el típico "poder sin voto formal" (Aghion–Tirole, 1997).
+            </p>
+          </div>
+
+          <h3>Votación secuencial: decisión tipo 2</h3>
+          <p>
+            Para extraer información asimétrica, AAE puede diseñar el orden de
+            votación para que vote primero quien tiene mejor información sobre
+            cada aspecto. Ejemplo: adquisición de empresa de robotics.
+          </p>
+          <div class="diagram" style="margin-top:18px;padding:24px;">
+            <svg viewBox="0 0 760 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+              <g>
+                <rect x="10" y="30" width="120" height="44" rx="8" fill="#efe1e1" stroke="#b06367"/>
+                <text x="70" y="50" text-anchor="middle" font-family="Outfit" font-size="11" font-weight="600" fill="#14171e">Leon</text>
+                <text x="70" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7c7a72">voto 1: ¿adquirir?</text>
+              </g>
+              <line x1="135" y1="52" x2="170" y2="52" stroke="#b06367" stroke-width="1.5"/>
+              <polygon points="170,46 180,52 170,58" fill="#b06367"/>
+
+              <g transform="translate(185, 0)">
+                <rect x="0" y="30" width="120" height="44" rx="8" fill="#efe1e1" stroke="#b06367"/>
+                <text x="60" y="50" text-anchor="middle" font-family="Outfit" font-size="11" font-weight="600" fill="#14171e">Kurt</text>
+                <text x="60" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7c7a72">voto 2: ¿a qué precio?</text>
+              </g>
+              <line x1="310" y1="52" x2="345" y2="52" stroke="#b06367" stroke-width="1.5"/>
+              <polygon points="345,46 355,52 345,58" fill="#b06367"/>
+
+              <g transform="translate(360, 0)">
+                <rect x="0" y="30" width="120" height="44" rx="8" fill="#efe1e1" stroke="#b06367"/>
+                <text x="60" y="50" text-anchor="middle" font-family="Outfit" font-size="11" font-weight="600" fill="#14171e">Manon</text>
+                <text x="60" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7c7a72">voto 3: ¿cuándo?</text>
+              </g>
+              <line x1="485" y1="52" x2="520" y2="52" stroke="#b06367" stroke-width="1.5"/>
+              <polygon points="520,46 530,52 520,58" fill="#b06367"/>
+
+              <g transform="translate(535, 0)">
+                <rect x="0" y="30" width="200" height="44" rx="8" fill="#fff5f5" stroke="#b06367" stroke-width="1.5"/>
+                <text x="100" y="50" text-anchor="middle" font-family="Outfit" font-size="11" font-weight="600" fill="#14171e">Decisión informada</text>
+                <text x="100" y="66" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7c7a72">mechanism design</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============ DIM 4: POWER ALLOCATION ============ -->
+      <article class="dim" data-c="power">
+        <div class="dim-head">
+            <div class="dim-num">Movimiento 04</div>
+            <h3 class="dim-title">Asignación de <em>poder</em> formal</h3>
+            <span class="dim-tag">Veto players · Decision rights</span>
+        </div>
+        <div>
+          <h3>El problema</h3>
+          <p>
+            Cuatro propietarios = cuatro <strong>veto players</strong> naturales
+            (Tsebelis, 2002). Si cada uno tiene veto absoluto, AAE se
+            paraliza. Si se les quita todo veto, la identidad familiar se
+            vacía. El protocolo familiar es el juego que resuelve esta
+            tensión.
+          </p>
+
+          <h3>Matriz de derechos de decisión</h3>
+          <div class="rights-matrix">
+            <div class="rights-head">
+              <span>Tipo de decisión</span>
+              <span>CEO</span>
+              <span>ExBd</span>
+              <span>Family</span>
+              <span>Unanim.</span>
+            </div>
+            <div class="rights-row">
+              <div>
+                <div class="rname">Operativa (&lt;€5M)</div>
+                <div class="rdesc">contratación, compras recurrentes, daily ops</div>
+              </div>
+              <div class="cell active">● decide</div>
+              <div class="cell">—</div>
+              <div class="cell">—</div>
+              <div class="cell">—</div>
+            </div>
+            <div class="rights-row">
+              <div>
+                <div class="rname">Estratégica (€5M–€50M)</div>
+                <div class="rdesc">adquisiciones, nuevos mercados, capex mayor</div>
+              </div>
+              <div class="cell">propone</div>
+              <div class="cell active">● vota</div>
+              <div class="cell">—</div>
+              <div class="cell">—</div>
+            </div>
+            <div class="rights-row">
+              <div>
+                <div class="rname">Estructural (&gt;€50M)</div>
+                <div class="rdesc">M&amp;A grande, expansión internacional, deuda</div>
+              </div>
+              <div class="cell">propone</div>
+              <div class="cell">avala</div>
+              <div class="cell active">● vota</div>
+              <div class="cell">—</div>
+            </div>
+            <div class="rights-row">
+              <div>
+                <div class="rname">Identitaria</div>
+                <div class="rdesc">venta de empresa, cambio de sede, 4º socio familiar</div>
+              </div>
+              <div class="cell">—</div>
+              <div class="cell">—</div>
+              <div class="cell">avala</div>
+              <div class="cell unanimous">● 4/4</div>
+            </div>
+          </div>
+
+          <p style="margin-top:18px;font-size:14px;">
+            Así, el número efectivo de <em>veto players</em> pasa de 4 a 1–2
+            dependiendo del tipo de decisión. El <strong>status quo</strong>
+            se debilita en decisiones operativas y se refuerza solo en las
+            identitarias — exactamente lo que una empresa familiar necesita.
+          </p>
+
+          <h3>Equilibrio entre autoridad formal y real</h3>
+          <div class="kv-card">
+            <div class="kv-row"><span class="k">Aghion–Tirole</span><span class="v">La autoridad formal baja con la línea verde; la real, con quien tiene la información. Si Leon controla el supply chain europeo, su poder real supera al voto formal.</span></div>
+            <div class="kv-row"><span class="k">Golden shares</span><span class="v">Acciones clase B con voto múltiple solo en decisiones tipo 4 (identitarias). Mantienen la voz familiar sin paralizar la operación.</span></div>
+            <div class="kv-row"><span class="k">Dual class</span><span class="v">Modelo usado por BMW, Porsche, New York Times. Separa capital de control.</span></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ============ SYNTHESIS ============ -->
+    <section class="synthesis">
+      <span class="eyebrow" style="color:var(--accent);">Síntesis</span>
+      <h2>El juego completo: cuatro dimensiones acopladas</h2>
+      <p>
+        Lo elegante del caso AAE es que las cuatro dimensiones no son
+        independientes — forman un único <strong>juego dinámico con
+        información incompleta</strong>, jugadores heterogéneos (familia +
+        management + clientes como ASML + proveedores) y horizonte de
+        década. El movimiento de Manon al asumir como CEO no se entiende sin
+        las tres restantes.
+      </p>
+
+      <div class="equilibria">
+        <div class="eq-card">
+          <div class="eq-label">Propiedad del equilibrio · 1</div>
+          <h4 class="eq-name">Sostenibilidad de incentivos</h4>
+          <p>Manon quiere empujar el crecimiento a 1.000 empleados y €1B sin extraer rentas. KPI mixtos, vesting y tournament entre hermanos lo acercan.</p>
+        </div>
+        <div class="eq-card">
+          <div class="eq-label">Propiedad del equilibrio · 2</div>
+          <h4 class="eq-name">Eficiencia contractual</h4>
+          <p>Ni AAE ni ASML/Pfizer hacen hold-up al otro. MFN, subastas, break-up fees y la integración vertical tipo Grauel.</p>
+        </div>
+        <div class="eq-card">
+          <div class="eq-label">Propiedad del equilibrio · 3</div>
+          <h4 class="eq-name">Estabilidad de coaliciones</h4>
+          <p>Los hermanos no bloquean al CEO por interés propio. Votación secuencial y matriz de derechos reducen el espacio de veto.</p>
+        </div>
+        <div class="eq-card">
+          <div class="eq-label">Propiedad del equilibrio · 4</div>
+          <h4 class="eq-name">Legitimidad del poder</h4>
+          <p>Manon es CEO con autoridad real, no decorativa. El separating equilibrium de Mulders al bajar a VP es la señal clave.</p>
+        </div>
+      </div>
+
+      <p style="margin-top:32px;font-style:italic;color:var(--text-muted);max-width:64ch;">
+        Lo que AAE está haciendo al pasar de Frank (externo) a Manon (familiar) es
+        un switching equilibrium en el juego de señalización: la familia
+        comunica al mercado que apuesta por continuidad de capital social
+        familiar combinado con management profesional. Manon conserva el
+        legado de William, pero el veredicto sobre si el equilibrio es
+        estable se escribirá en los próximos cinco años.
+      </p>
+    </section>
+
+    <footer>
+      <span>Estudio analítico · caso AAE Helmond · septiembre 2026</span>
+      <span class="mono" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">
+        Mavis · game theory applied
+      </span>
+    </footer>
+
+  </main>
+</body>
+</html>
