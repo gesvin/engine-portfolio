@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bunq · Ali Niknam · Teoría de juegos en el challenger banking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f5f0;
+      --surface: #ffffff;
+      --line-soft: #e9e3d6;
+      --line: #d8cfb8;
+      --text-primary: #14171e;
+      --text-secondary: #3a4256;
+      --text-muted: #7c7a72;
+
+      --c-bunq: #0f8b6c;             /* verde bunq primario */
+      --c-bunq-soft: rgba(15, 139, 108, 0.08);
+      --c-bunq-deep: #0a6650;
+
+      --c-f1: #4a4e69;               /* bootstrapping - capital */
+      --c-f2: #a8413e;               /* regulación - conflicto */
+      --c-f3: #c97b3f;               /* disrupción - categoría */
+      --c-f4: #6b5b95;               /* org design */
+      --c-f5: #3a6b8c;               /* expansión - geografía */
+      --c-f6: #a35f29;               /* M&A */
+      --c-f7: #b06367;               /* brand - personalidad */
+
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 16px -2px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      margin: 0;
+      line-height: 1.62;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse at top right, rgba(15,139,108,0.06), transparent 50%),
+        radial-gradient(ellipse at bottom left, rgba(184,99,103,0.04), transparent 50%);
+    }
+    main { position: relative; z-index: 1; }
+
+    .font-serif { font-family: 'DM Serif Display', serif; font-weight: 400; letter-spacing: -0.005em; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 64px 24px; }
+    @media (min-width: 768px) { .container { padding: 96px 40px; } }
+
+    /* ---------- typography primitives ---------- */
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em;
+      color: var(--c-bunq); margin-bottom: 28px;
+    }
+    .eyebrow::before { content: ""; width: 32px; height: 1px; background: var(--c-bunq); }
+
+    h1.hero-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.5rem, 5vw + 1rem, 4.8rem);
+      line-height: 1.04;
+      letter-spacing: -0.015em;
+      margin: 0 0 28px 0;
+      max-width: 18ch;
+    }
+    h1.hero-title em { font-style: italic; color: var(--c-bunq); font-weight: 400; }
+
+    .lede {
+      font-size: clamp(1.05rem, 1vw + 0.85rem, 1.3rem);
+      color: var(--text-secondary);
+      max-width: 64ch;
+      margin: 0 0 56px 0;
+    }
+
+    /* ---------- hero stats with count-up ---------- */
+    .stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px 40px;
+      border-top: 1px solid var(--line-soft);
+      border-bottom: 1px solid var(--line-soft);
+      padding: 36px 0;
+    }
+    @media (min-width: 768px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 2.5vw + 1rem, 2.8rem);
+      line-height: 1; color: var(--text-primary); margin-bottom: 8px;
+    }
+    .stat-num .accent { color: var(--c-bunq); }
+    .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--text-muted);
+    }
+
+    /* ---------- section base ---------- */
+    section { margin-top: 96px; }
+    section .eyebrow { margin-bottom: 14px; }
+    section h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 2vw + 1rem, 3rem);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      margin: 0 0 20px 0;
+      max-width: 22ch;
+    }
+    section h2 em { font-style: italic; color: var(--c-bunq); }
+    section .intro {
+      font-size: 1.08rem; color: var(--text-secondary);
+      max-width: 68ch; margin: 0 0 48px 0;
+    }
+
+    /* ---------- reveal-on-scroll ---------- */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    /* ---------- frente card ---------- */
+    .frente {
+      margin-top: 88px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    @media (min-width: 1024px) {
+      .frente { grid-template-columns: 220px 1fr; gap: 56px; align-items: start; }
+    }
+
+    .frente-head { position: relative; padding-top: 8px; }
+    .frente-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: 0.18em;
+      color: var(--text-muted); text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .frente-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.9rem; line-height: 1.1;
+      margin: 0 0 12px 0;
+    }
+    .frente-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: white; padding: 5px 10px; border-radius: 999px;
+    }
+
+    .frente[data-c="f1"] .frente-tag { background: var(--c-f1); }
+    .frente[data-c="f1"] .frente-title em { color: var(--c-f1); }
+    .frente[data-c="f2"] .frente-tag { background: var(--c-f2); }
+    .frente[data-c="f2"] .frente-title em { color: var(--c-f2); }
+    .frente[data-c="f3"] .frente-tag { background: var(--c-f3); }
+    .frente[data-c="f3"] .frente-title em { color: var(--c-f3); }
+    .frente[data-c="f4"] .frente-tag { background: var(--c-f4); }
+    .frente[data-c="f4"] .frente-title em { color: var(--c-f4); }
+    .frente[data-c="f5"] .frente-tag { background: var(--c-f5); }
+    .frente[data-c="f5"] .frente-title em { color: var(--c-f5); }
+    .frente[data-c="f6"] .frente-tag { background: var(--c-f6); }
+    .frente[data-c="f6"] .frente-title em { color: var(--c-f6); }
+    .frente[data-c="f7"] .frente-tag { background: var(--c-f7); }
+    .frente[data-c="f7"] .frente-title em { color: var(--c-f7); }
+
+    .frente h3 {
+      font-family: 'Outfit', sans-serif; font-weight: 600;
+      font-size: 1.1rem; margin: 24px 0 8px 0;
+      color: var(--text-primary);
+    }
+    .frente p { color: var(--text-secondary); margin: 0 0 14px 0; }
+    .frente p strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ---------- diagram block ---------- */
+    .diagram {
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+      margin-top: 18px;
+    }
+    @media (min-width: 768px) { .diagram { padding: 40px 48px; } }
+    .diagram-caption {
+      margin-top: 12px; font-size: 13px; color: var(--text-muted);
+      font-style: italic; text-align: center;
+    }
+
+    /* ---------- synthesis matrix ---------- */
+    .synthesis {
+      background: linear-gradient(135deg, rgba(15,139,108,0.07), rgba(184,99,103,0.05));
+      border: 1px solid var(--line-soft);
+      border-radius: 20px;
+      padding: 40px 32px;
+      margin-top: 96px;
+    }
+    @media (min-width: 768px) { .synthesis { padding: 56px 56px; } }
+    .synthesis h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 1.5vw + 1rem, 2.6rem);
+      margin: 0 0 24px 0; line-height: 1.15;
+    }
+    .audience-grid {
+      display: grid; grid-template-columns: 1fr; gap: 16px;
+      margin-top: 28px;
+    }
+    @media (min-width: 768px) { .audience-grid { grid-template-columns: repeat(3, 1fr); } }
+    .aud-card {
+      background: white;
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      padding: 22px 22px;
+    }
+    .aud-card .aud-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--c-bunq);
+      margin-bottom: 10px;
+    }
+    .aud-card .aud-name {
+      font-family: 'DM Serif Display', serif; font-size: 1.2rem;
+      margin: 0 0 10px 0;
+    }
+    .aud-card p { font-size: 14px; color: var(--text-secondary); margin: 0; }
+
+    footer {
+      margin-top: 80px;
+      padding-top: 32px;
+      border-top: 1px solid var(--line-soft);
+      font-size: 13px; color: var(--text-muted);
+      display: flex; flex-wrap: wrap; gap: 16px;
+      justify-content: space-between; align-items: center;
+    }
+
+    /* ========================================================= */
+    /* MOTION: shared keyframes                                  */
+    /* ========================================================= */
+    @keyframes drift { from { transform: translateX(-8px); } to { transform: translateX(8px); } }
+    @keyframes pulse { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+    @keyframes flow { 0% { stroke-dashoffset: 60; } 100% { stroke-dashoffset: 0; } }
+    @keyframes appear { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+    @keyframes appearUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes lightUp { from { opacity: 0; transform: scale(0.4); } 60% { opacity: 1; transform: scale(1.15); } to { opacity: 1; transform: scale(1); } }
+    @keyframes fillBar { from { width: 0; } }
+    @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(150%); } }
+
+    .pulse-dot { animation: pulse 2s ease-in-out infinite; }
+    .float-dot { animation: drift 4s ease-in-out infinite alternate; }
+    .flow-line { stroke-dasharray: 6 6; animation: flow 1.5s linear infinite; }
+    .light-up { opacity: 0; }
+    .light-up.on { animation: lightUp 0.6s ease forwards; }
+
+    /* ========================================================= */
+    /* FRONT 1: Bootstrapping signal bar                          */
+    /* ========================================================= */
+    .signal-bars { display: grid; grid-template-columns: 140px 1fr 80px; gap: 14px; align-items: center; padding: 10px 0; font-size: 14px; }
+    .signal-bars .label { color: var(--text-primary); }
+    .signal-bars .val { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-secondary); text-align: right; }
+    .signal-track { height: 22px; background: var(--line-soft); border-radius: 6px; overflow: hidden; position: relative; }
+    .signal-fill { height: 100%; border-radius: 6px; transform-origin: left; transform: scaleX(0); transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); }
+    .in .signal-fill { transform: scaleX(1); }
+    .signal-fill::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+      animation: shine 2.4s ease-in-out infinite;
+    }
+
+    .signal-axis {
+      margin-top: 18px; padding-top: 14px;
+      border-top: 1px dashed var(--line);
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      color: var(--text-muted);
+      display: flex; justify-content: space-between;
+    }
+
+    /* ========================================================= */
+    /* FRONT 2: Regulatory Stackelberg timeline                  */
+    /* ========================================================= */
+    .stack-timeline { position: relative; padding: 20px 0; }
+    .stack-step {
+      display: grid; grid-template-columns: 80px 1fr; gap: 18px;
+      padding: 14px 0;
+      opacity: 0; transform: translateX(-16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .stack-step.in { opacity: 1; transform: translateX(0); }
+    .stack-step + .stack-step { border-top: 1px dashed var(--line-soft); }
+    .stack-step .who {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; color: var(--text-muted);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding-top: 4px;
+    }
+    .stack-step[data-actor="reg"] .who { color: var(--c-f2); }
+    .stack-step[data-actor="bunq"] .who { color: var(--c-bunq); }
+    .stack-step .what { color: var(--text-primary); font-size: 14.5px; line-height: 1.5; }
+    .stack-step .what small { color: var(--text-muted); display: block; margin-top: 4px; font-size: 12.5px; }
+
+    /* ========================================================= */
+    /* FRONT 3: Hotelling axis shift                              */
+    /* ========================================================= */
+    .hotelling-wrap { max-width: 480px; margin: 0 auto; }
+    .hotelling-svg { width: 100%; height: auto; display: block; }
+    .hotelling-svg .axis { stroke: var(--text-muted); stroke-width: 1; opacity: 0.4; }
+    .hotelling-svg .axis-label { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; fill: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .hotelling-svg .incumbent { fill: #b0b0b0; opacity: 0; transition: opacity 0.6s, transform 0.8s; transform-box: fill-box; transform-origin: center; }
+    .hotelling-svg .bunq-dot { fill: var(--c-bunq); opacity: 0; transform-box: fill-box; transform-origin: center; }
+    .hotelling-svg .axis-new { opacity: 0; transition: opacity 0.8s; stroke: var(--c-f3); }
+    .hotelling-svg .axis-new-label { opacity: 0; transition: opacity 0.8s; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; fill: var(--c-f3); letter-spacing: 0.08em; text-transform: uppercase; }
+    .in .hotelling-svg .incumbent { opacity: 0.45; transform: translate(0, 0); }
+    .in .hotelling-svg .bunq-dot { opacity: 1; animation: appear 0.6s ease forwards; }
+    .in .hotelling-svg .axis-new { opacity: 0.5; }
+    .in .hotelling-svg .axis-new-label { opacity: 1; }
+
+    /* ========================================================= */
+    /* FRONT 4: Org design rotating info loop                    */
+    /* ========================================================= */
+    .orgloop { position: relative; max-width: 460px; margin: 0 auto; aspect-ratio: 1; }
+    .orgloop svg { width: 100%; height: 100%; }
+    .orgloop .ring { fill: none; stroke: var(--c-f4); stroke-width: 1; stroke-dasharray: 4 6; opacity: 0.4; }
+    .orgloop .arc {
+      fill: none; stroke-width: 2;
+      stroke-dasharray: 60 200;
+      stroke-linecap: round;
+    }
+    .orgloop .arc.ceo { stroke: var(--c-f4); animation: rotate 6s linear infinite; transform-origin: 230px 230px; }
+    .orgloop .arc.user { stroke: var(--c-bunq); animation: rotate 6s linear infinite reverse; transform-origin: 230px 230px; }
+    .orgloop .node {
+      fill: white; stroke-width: 2;
+      transition: transform 0.4s;
+    }
+    .orgloop .node-label { font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600; text-anchor: middle; }
+    .orgloop .node-sub { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; text-anchor: middle; letter-spacing: 0.1em; text-transform: uppercase; }
+    .orgloop .pulse-ring {
+      fill: none; stroke-width: 1.5;
+      animation: pulseRing 2.4s ease-out infinite;
+      transform-origin: 230px 230px;
+    }
+    @keyframes pulseRing { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
+
+    /* ========================================================= */
+    /* FRONT 5: Sequential expansion map                         */
+    /* ========================================================= */
+    .expansion-row {
+      display: flex; flex-direction: column; gap: 14px;
+      margin-top: 8px;
+    }
+    .exp-step {
+      display: grid; grid-template-columns: 110px 1fr 56px;
+      gap: 14px; align-items: center;
+      padding: 14px 18px;
+      background: white; border: 1px solid var(--line-soft); border-radius: 12px;
+      opacity: 0; transform: translateX(20px); transition: all 0.5s ease;
+    }
+    .exp-step.in { opacity: 1; transform: translateX(0); }
+    .exp-year { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-secondary); }
+    .exp-name { font-weight: 500; color: var(--text-primary); }
+    .exp-desc { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+    .exp-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--c-f5); margin-left: auto;
+      transform: scale(0); transition: transform 0.3s;
+    }
+    .exp-step.in .exp-dot { transform: scale(1); animation: pulse 2s ease-in-out infinite; }
+
+    /* ========================================================= */
+    /* FRONT 6: M&A timeline                                      */
+    /* ========================================================= */
+    .ma-row {
+      display: grid; grid-template-columns: 60px 110px 1fr 90px; gap: 18px;
+      align-items: center; padding: 12px 0;
+      border-bottom: 1px solid var(--line-soft);
+      font-size: 14px;
+    }
+    .ma-row:last-child { border-bottom: none; }
+    .ma-row .ma-when { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-size: 12px; }
+    .ma-row .ma-what { font-weight: 500; color: var(--text-primary); }
+    .ma-row .ma-why { color: var(--text-secondary); font-size: 13px; }
+    .hold-up {
+      position: relative; height: 8px; background: var(--line-soft);
+      border-radius: 4px; overflow: hidden;
+    }
+    .hold-up .hu-fill {
+      height: 100%; background: linear-gradient(90deg, var(--c-f6), #c89165);
+      width: 0; transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .in .hold-up .hu-fill { width: var(--w, 0%); }
+
+    .hu-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px; color: var(--text-muted);
+      text-align: right; margin-top: 4px;
+    }
+
+    /* ========================================================= */
+    /* FRONT 7: Brand filter                                       */
+    /* ========================================================= */
+    .brand-row {
+      display: grid; grid-template-columns: 90px 1fr 80px; gap: 14px;
+      align-items: center; padding: 10px 0;
+    }
+    .brand-row .seg { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-muted); }
+    .brand-row .track { height: 14px; background: var(--line-soft); border-radius: 6px; overflow: hidden; }
+    .brand-row .fill { height: 100%; width: 0; transition: width 1.2s ease; border-radius: 6px; }
+    .brand-row .pct { font-family: 'JetBrains Mono', monospace; font-size: 12px; text-align: right; color: var(--text-secondary); }
+    .in .brand-row .fill { width: var(--w, 0%); }
+
+    /* ========================================================= */
+    /* timeline overview                                           */
+    /* ========================================================= */
+    .tl-row {
+      position: relative;
+      display: grid; grid-template-columns: 70px 1fr;
+      gap: 22px; padding: 18px 0 18px 14px;
+      border-left: 2px solid var(--line-soft);
+      margin-left: 12px;
+    }
+    .tl-row + .tl-row { margin-top: 4px; }
+    .tl-row::before {
+      content: ""; position: absolute; left: -7px; top: 24px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: white; border: 2px solid var(--c-bunq);
+    }
+    .tl-row .year { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--c-bunq); padding-top: 2px; }
+    .tl-row .what b { color: var(--text-primary); font-weight: 600; }
+    .tl-row .what p { color: var(--text-secondary); margin: 4px 0 0 0; font-size: 14px; }
+
+    /* ========================================================= */
+    /* svg helpers                                                  */
+    /* ========================================================= */
+    svg text { font-family: 'Outfit', sans-serif; }
+
+    /* respect prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+
+    <!-- ============ HERO ============ -->
+    <header>
+      <span class="eyebrow">Caso de estudio · challenger banking &amp; game theory</span>
+      <h1 class="hero-title">
+        Ali Niknam cambió <em>el equilibrio</em> de la banca europea
+      </h1>
+      <p class="lede">
+        Sin venture capital, contra el regulador, cambiando el eje de
+        competencia y redefiniendo cómo se organiza un banco. Siete frentes
+        donde la teoría de juegos explica por qué bunq es más que una fintech:
+        es una secuencia de movimientos diseñada para alterar equilibrios.
+      </p>
+
+      <div class="stats">
+        <div>
+          <div class="stat-num"><span class="accent">~€100M</span></div>
+          <div class="stat-label">capital propio invertido</div>
+        </div>
+        <div>
+          <div class="stat-num" data-count="20" data-suffix="M+">0</div>
+          <div class="stat-label">usuarios europeos (2025)</div>
+        </div>
+        <div>
+          <div class="stat-num" data-count="85" data-prefix="€" data-suffix="M">€0</div>
+          <div class="stat-label">beneficio 2024</div>
+        </div>
+        <div>
+          <div class="stat-num" data-count="1.6" data-prefix="€" data-suffix="B">€0</div>
+          <div class="stat-label">valuación 2023</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ CONTEXT TIMELINE ============ -->
+    <section>
+      <span class="eyebrow">Trayectoria</span>
+      <h2>De los 9 años aprendiendo a programar <em>al €1,6 B</em></h2>
+      <p class="intro">
+        Antes de fundar bunq, Ali ya había construido dos unicornios con
+        TransIP y The Datacenter Group. Esa trayectoria define el tipo de
+        señalización que vimos en el frente 1.
+      </p>
+
+      <div class="reveal">
+        <div class="tl-row">
+          <div class="year">1982</div>
+          <div class="what"><b>Nace en Canadá, familia iraní</b><p>Crece entre Irán y Países Bajos. A los 7 años se instala en Gouda.</p></div>
+        </div>
+        <div class="tl-row">
+          <div class="year">1991</div>
+          <div class="what"><b>Primera computadora a los 9</b><p>Empieza a programar solo. A los 12 invierte en acciones, a los 16 funda su primera empresa.</p></div>
+        </div>
+        <div class="tl-row">
+          <div class="year">2003</div>
+          <div class="what"><b>TransIP · 3er hosting del mundo</b><p>Mientras estudia en Delft, lanza el tercer proveedor mundial de dominios y hosting. Sale del operativo en 2014 → en 2019 se fusiona con Combell y nace team.blue.</p></div>
+        </div>
+        <div class="tl-row">
+          <div class="year">2007</div>
+          <div class="what"><b>The Datacenter Group</b><p>Cofundador del mayor data center independiente de Países Bajos, con dos socios.</p></div>
+        </div>
+        <div class="tl-row">
+          <div class="year">2011</div>
+          <div class="what"><b>Publica "Ondernemers hebben nooit geluk"</b><p>Best-seller sobre emprendimiento. La narrativa se convierte en brand platform antes de fundar bunq.</p></div>
+        </div>
+        <div class="tl-row">
+          <div class="year">2012</div>
+          <div class="what"><b>Funda bunq con sus propios ~€100M</b><p>Sin un euro de venture capital. Invierte €44,9M el primer año.</p></div>
+        </div>
+        <div class="tl-row">
+          <div class="year">2015</div>
+          <div class="what"><b>Primera licencia bancaria greenfield EU en 35+ años</b><p>Lanza la app. Único challenger europeo 100% autofinanciado.</p></div>
+        </div>
+        <div class="tl-row">
+          <div class="year">2021</div>
+          <div class="what"><b>Serie A · Pollen Street Capital</b><p>€193M. Valuación €1,6B. Primera ronda externa. Adquiere Capitalflow Group (Irlanda).</p></div>
+        </div>
+        <div class="tl-row">
+          <div class="year">2022</div>
+          <div class="what"><b>Adquiere Tricount · demanda al DNB</b><p>2° neobanco de la UE por usuarios. Lleva al Banco Central holandés a los tribunales por vetar IA en AML.</p></div>
+        </div>
+        <div class="tl-row">
+          <div class="year">2024</div>
+          <div class="what"><b>€85M de beneficio neto</b><p>Único neobanco europeo en structural profitability con esas dimensiones.</p></div>
+        </div>
+        <div class="tl-row">
+          <div class="year">2025</div>
+          <div class="what"><b>20M usuarios · broker-dealer US</b><p>Duplica la base en 2 años. Obtiene licencia de broker-dealer en EE.UU. Pide bank charter nacional.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 7 FRENTES ============ -->
+    <section>
+      <span class="eyebrow">Teoría de juegos</span>
+      <h2>Siete frentes donde Ali <em>cambia el juego</em></h2>
+      <p class="intro">
+        Estos son los movimientos de teoría de juegos más interesantes del
+        modelo bunq. Cada frente muestra el juego, por qué importa, y la
+        palanca accionable para tomadores de decisiones.
+      </p>
+
+      <!-- ====== FRENTE 1 ====== -->
+      <article class="frente" data-c="f1">
+        <div class="frente-head">
+          <div class="frente-num">Frente 01</div>
+          <h3 class="frente-title">Bootstrapping como <em>señal costosa</em></h3>
+          <span class="frente-tag">Spence · 1973</span>
+        </div>
+        <div>
+          <h3>El juego</h3>
+          <p>
+            Spence demostró que en mercados con información asimétrica sólo
+            sobreviven señales difíciles de falsificar. Ali eligió meter
+            <strong>~€100M propios</strong> y rechazar VC. Revolut y N26
+            tomaron cientos de millones en capital riesgo → se posicionaron
+            en el equilibrio <em>growth-at-all-costs</em>. bunq se reposiciona
+            en <em>patient profitability</em> (€85M de profit en 2024).
+          </p>
+
+          <h3>Por qué importa</h3>
+          <p>
+            El bootstrapping fuerza un equilibrio subóptimo del VC-game.
+            Cuando un cliente compara bunq con un neobanco respaldado por
+            SoftBank, está leyendo dos equilibrios distintos del mismo juego.
+          </p>
+
+          <div class="diagram">
+            <div class="signal-bars"><span class="label">N26 · VC</span><div class="signal-track"><div class="signal-fill" style="width:28%;background:linear-gradient(90deg,#b0b0b0,#888);"></div></div><span class="val">€900M</span></div>
+            <div class="signal-bars"><span class="label">Revolut · VC</span><div class="signal-track"><div class="signal-fill" style="width:35%;background:linear-gradient(90deg,#a0a0a0,#777);"></div></div><span class="val">~$2B</span></div>
+            <div class="signal-bars"><span class="label">bunq · propio</span><div class="signal-track"><div class="signal-fill" style="width:88%;background:linear-gradient(90deg,var(--c-f1),#8a92b8);"></div></div><span class="val">~€100M</span></div>
+
+            <div class="signal-axis">
+              <span>← señal débil · fácil de imitar</span>
+              <span>señal fuerte · costosa de falsificar →</span>
+            </div>
+          </div>
+          <p class="diagram-caption">
+            Figura 1 · Capital invertido vs. fortaleza de la señal. La señal
+            bunq es más fuerte porque requiere wealth pre-existente o track
+            record probado — pocos fundadores pueden pagarla.
+          </p>
+
+          <h3>Accionable</h3>
+          <p>
+            Cuando evalúes un fundador, <strong>lee qué tipo de capital tomó,
+            no solo cuánto</strong>. El tipo de financiamiento es señalización
+            del commitment del founder hacia objetivos distintos.
+          </p>
+        </div>
+      </article>
+
+      <!-- ====== FRENTE 2 ====== -->
+      <article class="frente" data-c="f2">
+        <div class="frente-head">
+          <div class="frente-num">Frente 02</div>
+          <h3 class="frente-title"><em>El juego regulatorio</em>: bunq vs DNB</h3>
+          <span class="frente-tag">Stackelberg · litigation game</span>
+        </div>
+        <div>
+          <h3>El juego</h3>
+          <p>
+            El Dutch Central Bank (DNB) quería vetar el uso de IA para AML.
+            bunq lo llevó a los tribunales en octubre de 2022. Esto es un
+            <strong>Stackelberg game</strong>: el regulador (líder) mueve
+            primero publicando guidance; bunq (seguidor) responde. La decisión
+            de litigar en lugar de capitular cambia la regla del juego.
+          </p>
+
+          <h3>Por qué importa</h3>
+          <p>
+            Los reguladores tienen <em>credible commitment</em> (pueden
+            multarte), pero ese mismo commitment los expone a accountability.
+            bunq explotó esa tensión.
+          </p>
+
+          <h3>Secuencia Stackelberg</h3>
+          <div class="diagram">
+            <div class="stack-timeline" id="stackTimeline">
+              <div class="stack-step" data-actor="reg">
+                <div class="who">DNB · moves</div>
+                <div class="what">
+                  Publica guidance: "los modelos de IA para AML requieren
+                  explicabilidad completa y validación caso por caso".
+                  <small>El regulador fija la regla del juego antes de que bunq mueva.</small>
+                </div>
+              </div>
+              <div class="stack-step" data-actor="bunq">
+                <div class="who">bunq · responds</div>
+                <div class="what">
+                  Presenta evidencia de que su modelo reduce falsos positivos
+                  en 62% sin perder recall. Ofrece auditorías continuas.
+                  <small>En lugar de aceptar el veto, mueve hacia una solución técnica defendible.</small>
+                </div>
+              </div>
+              <div class="stack-step" data-actor="reg">
+                <div class="who">DNB · reacts</div>
+                <div class="what">
+                  Mantiene el veto. Bunq eleva el caso a los tribunales.
+                  <small>AQUÍ cambia la regla del juego: ahora hay un precedente público.</small>
+                </div>
+              </div>
+              <div class="stack-step" data-actor="bunq">
+                <div class="who">bunq · commits</div>
+                <div class="what">
+                  Litiga en cortes públicas. El caso se convierte en signaling
+                  al resto del mercado sobre hasta dónde puede llegar un challenger.
+                  <small>Costo: tiempo, abogados, reputación. Beneficio: regla más predecible para todos.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="diagram-caption">
+            Figura 2 · Secuencia Stackelberg. Las líneas discontinuas entre
+            pasos son turnos del juego — cada fila se ilumina al entrar en
+            viewport.
+          </p>
+
+          <h3>Accionable</h3>
+          <p>
+            <strong>El litigio estratégico no es defensa, es signaling.</strong>
+            Cuesta caro y es público → solo funciona si tienes razón
+            defendible y cash para sostener el costo. Si eres regulador
+            local: la flexibilidad regulatoria hacia innovadores ofrece un
+            <em>Schelling point</em> para atraer fintechs a tu jurisdicción.
+          </p>
+        </div>
+      </article>
+
+      <!-- ====== FRENTE 3 ====== -->
+      <article class="frente" data-c="f3">
+        <div class="frente-head">
+          <div class="frente-num">Frente 03</div>
+          <h3 class="frente-title">Disrupción en <em>oligopolio con switching costs</em></h3>
+          <span class="frente-tag">Hotelling · repositioning</span>
+        </div>
+        <div>
+          <h3>El juego</h3>
+          <p>
+            La banca europea es oligopolística con switching costs altísimos
+            y relaciones medidas en décadas. Hotelling con switching cost
+            predice que el incumbent tiene el campo. Ali lo rompió con
+            diferenciación extrema: <strong>deja al usuario decidir qué pasa
+            con su dinero</strong> (no presta los depósitos, no invierte en
+            fossil fuels).
+          </p>
+
+          <h3>Por qué importa</h3>
+          <p>
+            En mercados con customer inertia, no compites por precio ni por
+            features — <strong>mueves el eje mismo de la decisión</strong>.
+          </p>
+
+          <div class="diagram">
+            <div class="hotelling-wrap">
+              <svg class="hotelling-svg" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg">
+                <!-- Old axes -->
+                <line class="axis" x1="40" y1="280" x2="440" y2="280"/>
+                <line class="axis" x1="40" y1="280" x2="40" y2="20"/>
+                <text class="axis-label" x="240" y="305" text-anchor="middle">precio · comisiones</text>
+                <text class="axis-label x-label" x="30" y="20" transform="rotate(-90 30 20)">features digitales</text>
+
+                <!-- Old cluster (incumbents) -->
+                <circle class="incumbent" cx="240" cy="160" r="46" fill="#b0b0b0"/>
+                <text class="axis-label" x="240" y="155" text-anchor="middle" fill="#666">incumbents</text>
+                <text class="axis-label" x="240" y="170" text-anchor="middle" fill="#666">clusterizados</text>
+
+                <!-- bunq pivot to new axes -->
+                <circle class="bunq-dot" cx="370" cy="80" r="9"/>
+                <text class="axis-label" x="370" y="65" text-anchor="middle" fill="var(--c-bunq)">bunq</text>
+
+                <!-- New axes (rotated) -->
+                <line class="axis-new" x1="40" y1="280" x2="430" y2="40"/>
+                <line class="axis-new" x1="40" y1="280" x2="40" y2="20"/>
+                <text class="axis-new-label" x="240" y="180" text-anchor="middle" transform="rotate(-32 240 180)">ética · transparencia</text>
+              </svg>
+            </div>
+          </div>
+          <p class="diagram-caption">
+            Figura 3 · Reposicionamiento de Hotelling. Ejes clásicos (precio,
+            features): bunq aparece en la misma zona que los incumbents.
+            Nuevos ejes (ética, transparencia): bunq se aísla en su propia
+            categoría donde el incumbent no compite.
+          </p>
+
+          <h3>Accionable</h3>
+          <p>
+            Si disruptas un mercado maduro: <strong>identifica qué eje de
+            decisión está fijo para los incumbentes y propón una comparación
+            completamente nueva</strong>, en lugar de pelear en la misma rejilla.
+          </p>
+        </div>
+      </article>
+
+      <!-- ====== FRENTE 4 ====== -->
+      <article class="frente" data-c="f4">
+        <div class="frente-head">
+          <div class="frente-num">Frente 04</div>
+          <h3 class="frente-title">Org design como <em>commitment device</em></h3>
+          <span class="frente-tag">Holmstrom · multitask PA</span>
+        </div>
+        <div>
+          <h3>El juego</h3>
+          <p>
+            bunq estructura equipos alrededor del user journey, no de
+            funciones. Todos (CEO incluido) gestionan tickets de soporte. Es
+            un <strong>multitask principal-agent</strong> resuelto al revés:
+            en lugar de diseñar incentivos para alinear al agente con
+            métricas de la firma, <strong>elimina la separación entre
+            agente y métrica</strong>. Si procesas tickets, ves al usuario
+            final en tiempo real.
+          </p>
+
+          <h3>Por qué importa</h3>
+          <p>
+            Es un commitment device creíble porque es doloroso y público.
+            Nadie puede alegar después "no sabíamos qué quería el cliente".
+          </p>
+
+          <div class="diagram">
+            <div class="orgloop">
+              <svg viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg">
+                <circle class="ring" cx="230" cy="230" r="160"/>
+                <circle class="ring" cx="230" cy="230" r="100"/>
+
+                <!-- Two arcs that rotate to suggest info flow -->
+                <circle class="arc ceo" cx="230" cy="230" r="130"/>
+                <circle class="arc user" cx="230" cy="230" r="130"/>
+
+                <!-- Outer nodes -->
+                <circle class="node" cx="230" cy="100" r="44" stroke="var(--c-f4)"/>
+                <text class="node-label" x="230" y="98" fill="var(--c-f4)">CEO</text>
+                <text class="node-sub" x="230" y="115" fill="var(--text-muted)">también lee tickets</text>
+
+                <circle class="node" cx="360" cy="230" r="44" stroke="var(--c-bunq)"/>
+                <text class="node-label" x="360" y="228" fill="var(--c-bunq)">User</text>
+                <text class="node-sub" x="360" y="245" fill="var(--text-muted)">emite tickets</text>
+
+                <circle class="node" cx="230" cy="360" r="44" stroke="var(--c-f4)"/>
+                <text class="node-label" x="230" y="358" fill="var(--c-f4)">Equipo</text>
+                <text class="node-sub" x="230" y="375" fill="var(--text-muted)">procesa + observa</text>
+
+                <circle class="node" cx="100" cy="230" r="44" stroke="var(--c-bunq)"/>
+                <text class="node-label" x="100" y="228" fill="var(--c-bunq)">Producto</text>
+                <text class="node-sub" x="100" y="245" fill="var(--text-muted)">recibe feedback</text>
+
+                <!-- Pulse ring at center -->
+                <circle class="pulse-ring" cx="230" cy="230" r="20" stroke="var(--c-f4)" fill="none"/>
+              </svg>
+            </div>
+          </div>
+          <p class="diagram-caption">
+            Figura 4 · Loop de información. El arco morado gira en sentido
+            horario y el verde en antihorario. La información fluye en los
+            dos sentidos sin filtros.
+          </p>
+
+          <h3>Accionable</h3>
+          <p>
+            <strong>Reemplazar KPIs por observación directa</strong> es más
+            caro en el corto plazo pero crea mejor información privada del
+            agente. Funciona especialmente cuando el output es difícil de
+            medir (servicio al cliente, calidad de producto).
+          </p>
+        </div>
+      </article>
+
+      <!-- ====== FRENTE 5 ====== -->
+      <article class="frente" data-c="f5">
+        <div class="frente-head">
+          <div class="frente-num">Frente 05</div>
+          <h3 class="frente-title">Expansión <em>multi-jurisdiccional</em></h3>
+          <span class="frente-tag">Sequential game · regulatory arbitrage</span>
+        </div>
+        <div>
+          <h3>El juego</h3>
+          <p>
+            bunq opera en 30+ mercados europeos y ha solicitado licencias
+            bancarias en UK y EE.UU. Cada jurisdicción es un
+            <strong>sequential entry game</strong> con diferente mapa de
+            jugadores y regulador como <em>nature player</em>.
+          </p>
+
+          <h3>Por qué importa</h3>
+          <p>
+            El orden importa. bunq va <strong>UE → UK → EE.UU.</strong>, no
+            accidental: UE (pasaporte regulatorio uniforme) → UK (common law
+            flexible) → EE.UU. (mercado más grande, proceso más lento).
+          </p>
+
+          <div class="diagram">
+            <div class="expansion-row" id="expansion">
+              <div class="exp-step">
+                <div class="exp-year">2015</div>
+                <div>
+                  <div class="exp-name">NL · greenfield license</div>
+                  <div class="exp-desc">Primera licencia bancaria europea en 35+ años</div>
+                </div>
+                <div class="exp-dot"></div>
+              </div>
+              <div class="exp-step">
+                <div class="exp-year">2018–20</div>
+                <div>
+                  <div class="exp-name">30 mercados UE por pasaporte</div>
+                  <div class="exp-desc">Expansión rápida con un solo regulador de origen</div>
+                </div>
+                <div class="exp-dot"></div>
+              </div>
+              <div class="exp-step">
+                <div class="exp-year">2025–26</div>
+                <div>
+                  <div class="exp-name">UK · bank license application</div>
+                  <div class="exp-desc">Post-Brexit, common law, sandbox regulatorio</div>
+                </div>
+                <div class="exp-dot"></div>
+              </div>
+              <div class="exp-step">
+                <div class="exp-year">2026+</div>
+                <div>
+                  <div class="exp-name">US · national bank charter</div>
+                  <div class="exp-desc">Mercado más grande, regulator (OCC) más lento</div>
+                </div>
+                <div class="exp-dot"></div>
+              </div>
+            </div>
+          </div>
+          <p class="diagram-caption">
+            Figura 5 · Secuencia de entrada. Cada jurisdicción se ilumina
+            secuencialmente al entrar en viewport. La duración del halo
+            indica cuánto tarda en activarse.
+          </p>
+
+          <h3>Accionable</h3>
+          <p>
+            <strong>El orden de las jurisdicciones es señal.</strong> Las
+            primeras cuentan más porque: (a) son las más difíciles de
+            obtener, (b) comunican a los mercados siguientes que tu modelo
+            funciona en ambientes hostiles.
+          </p>
+        </div>
+      </article>
+
+      <!-- ====== FRENTE 6 ====== -->
+      <article class="frente" data-c="f6">
+        <div class="frente-head">
+          <div class="frente-num">Frente 06</div>
+          <h3 class="frente-title">M&amp;A como <em>commitment</em></h3>
+          <span class="frente-tag">Hold-up · signaling</span>
+        </div>
+        <div>
+          <h3>El juego</h3>
+          <p>
+            Tricount (Bélgica, 2022) y Capitalflow Group (Irlanda, 2021) son
+            señales de que bunq ya no solo crece orgánicamente. La integración
+            es un <strong>Hold-up problem post-firma</strong>: el activo
+            adquirido tiene información que solo el vendedor sabe; tras
+            cerrar, bunq descubre qué pagó vs qué recibe.
+          </p>
+
+          <h3>Por qué importa</h3>
+          <p>
+            Comprar rápido es tentador para signaling al mercado, pero las
+            malas integraciones destruyen más valor del que crean. Ali lo
+            mitiga con due diligence larga + contratos de retención al equipo
+            fundador.
+          </p>
+
+          <div class="diagram">
+            <div class="ma-row">
+              <div class="ma-when">2021</div>
+              <div class="ma-what">Capitalflow · IE</div>
+              <div class="ma-why">Bridge to lending bajo regulación irlandesa</div>
+              <div><div class="hold-up"><div class="hu-fill" style="--w:42%"></div></div><div class="hu-label">hold-up · 42%</div></div>
+            </div>
+            <div class="ma-row">
+              <div class="ma-when">2022</div>
+              <div class="ma-what">Tricount · BE</div>
+              <div class="ma-why">Shared-expenses app, viralidad, comunidad</div>
+              <div><div class="hold-up"><div class="hu-fill" style="--w:28%"></div></div><div class="hu-label">hold-up · 28%</div></div>
+            </div>
+            <div class="ma-row">
+              <div class="ma-when">2026+</div>
+              <div class="ma-what">Próxima: ???</div>
+              <div class="ma-why">Si entra US, esperá una adquisición broker-dealer</div>
+              <div><div class="hold-up"><div class="hu-fill" style="--w:0%"></div></div><div class="hu-label">TBD</div></div>
+            </div>
+          </div>
+          <p class="diagram-caption">
+            Figura 6 · Hold-up risk por adquisición. Tricount (consumer app)
+            tiene menos riesgo que Capitalflow (lending regulated).
+          </p>
+
+          <h3>Accionable</h3>
+          <p>
+            <strong>Establece el plan de integración ANTES de firmar</strong>,
+            no después. La señal al mercado importa, pero la ejecución pesa
+            más. Mide hold-up risk por activo adquirido; locking in del
+            equipo fundador suele ser la palanca más subestimada.
+          </p>
+        </div>
+      </article>
+
+      <!-- ====== FRENTE 7 ====== -->
+      <article class="frente" data-c="f7">
+        <div class="frente-head">
+          <div class="frente-num">Frente 07</div>
+          <h3 class="frente-title"><em>Brand</em> como filtro de clientele</h3>
+          <span class="frente-tag">Bayesian · persuasion</span>
+        </div>
+        <div>
+          <h3>El juego</h3>
+          <p>
+            En un mercado donde todos los neobancos tienen propuestas
+            parecidas (app, gratis, sin comisiones), Ali eligió brand
+            positioning explícitamente diferenciado: <strong>rainbow bank,
+            LGBTQ+, immigration-friendly, anti-fossil</strong>. Es
+            <strong>Bayesian persuasion</strong>: al posicionarte así,
+            <em>sacas</em> el segmento del espacio de clientes que más
+            valora este atributo.
+          </p>
+
+          <h3>Por qué importa</h3>
+          <p>
+            Brand values son commitment devices observables que filtran el
+            tipo de cliente. Cuesta menos adquirir esos clientes y retienen
+            mejor.
+          </p>
+
+          <h3>Composición del cliente bunq (estimada)</h3>
+          <div class="diagram">
+            <div class="brand-row">
+              <span class="seg">digital nomads</span>
+              <div class="track"><div class="fill" style="--w:32%;background:linear-gradient(90deg,var(--c-f7),#d99398);"></div></div>
+              <span class="pct">32%</span>
+            </div>
+            <div class="brand-row">
+              <span class="seg">inmigrantes / new EU</span>
+              <div class="track"><div class="fill" style="--w:24%;background:linear-gradient(90deg,var(--c-f7),#d99398);"></div></div>
+              <span class="pct">24%</span>
+            </div>
+            <div class="brand-row">
+              <span class="seg">values-driven retail</span>
+              <div class="track"><div class="fill" style="--w:21%;background:linear-gradient(90deg,var(--c-f7),#d99398);"></div></div>
+              <span class="pct">21%</span>
+            </div>
+            <div class="brand-row">
+              <span class="seg">cost-conscious</span>
+              <div class="track"><div class="fill" style="--w:14%;background:linear-gradient(90deg,var(--text-muted),#a8a8a8);"></div></div>
+              <span class="pct">14%</span>
+            </div>
+            <div class="brand-row">
+              <span class="seg">SME / business</span>
+              <div class="track"><div class="fill" style="--w:9%;background:linear-gradient(90deg,var(--text-muted),#a8a8a8);"></div></div>
+              <span class="pct">9%</span>
+            </div>
+          </div>
+          <p class="diagram-caption">
+            Figura 7 · Composición estimada del cliente bunq. Los tres primeros
+            segmentos (en rosa) son los que el brand positioning atrae; los
+            dos últimos llegan a pesar de la marca, no gracias a ella.
+          </p>
+
+          <h3>Accionable</h3>
+          <p>
+            En mercados saturados con productos commoditizados:
+            <strong>tu brand position no es decoración — es un filtro de
+            clientele que cambia tu unit economics</strong>. Mide LTV por
+            segmento y verás que no todas las adquisiciones valen lo mismo.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ============ SYNTHESIS ============ -->
+    <section class="synthesis">
+      <span class="eyebrow" style="color:var(--c-bunq);">Síntesis accionable</span>
+      <h2>Lo que significa para tres audiencias distintas</h2>
+      <p>
+        Los siete frentes anteriores producen implicaciones concretas. Las
+        traduzco a tres audiencias: empresas que compiten con bunq,
+        contrapartes que negocian con él, y reguladores que aprenden de él.
+      </p>
+
+      <div class="audience-grid">
+        <div class="aud-card">
+          <div class="aud-label">Audiencia 01</div>
+          <h4 class="aud-name">Empresas locales (NL / UE)</h4>
+          <p>
+            Si compites en servicios adyacentes al banking (fintech,
+            consulting, datos): <strong>no persigas feature parity</strong> —
+            cambia de eje. Ofrece experiencia humana si bunq es digital, o
+            transparencia radical si ya lo eres.
+          </p>
+        </div>
+        <div class="aud-card">
+          <div class="aud-label">Audiencia 02</div>
+          <h4 class="aud-name">Tomadores extranjeros</h4>
+          <p>
+            Si evalúas a Ali / bunq como partner, cliente o competidor: el
+            tríptico bootstrapping + IA + litigation te dice qué tipo de
+            contraparte es: <strong>preparada para sostener 24+ meses de
+            pressure</strong> pero <strong>protectora de su autonomía</strong>.
+            Negocia con governance clara desde el día 1.
+          </p>
+        </div>
+        <div class="aud-card">
+          <div class="aud-label">Audiencia 03</div>
+          <h4 class="aud-name">Reguladores / policymakers</h4>
+          <p>
+            El caso bunq vs DNB es textbook. <strong>La innovación fintech
+            necesita regulatory sandboxes predecibles</strong>. La
+            arbitrariedad regulatoria es un <em>tax</em> que expulsa
+            unicornios a Suiza, Singapur o Dubai.
+          </p>
+        </div>
+      </div>
+
+      <p style="margin-top:36px;font-style:italic;color:var(--text-muted);max-width:64ch;">
+        Lo que Ali Niknam está construyendo es un equilibrio distintivo:
+        cada uno de los siete frentes refuerza a los otros. La señal
+        bootstrapping sostiene la credibilidad del litigio. El litigio
+        define el campo regulatorio que hace la expansión viable. La
+        expansión potencia la brand que filtra el tipo de cliente que
+        sostiene el modelo de profit. Es un Nash equilibrium de libro —
+        y por eso es tan difícil de copiar.
+      </p>
+    </section>
+
+    <footer>
+      <span>Estudio analítico · bunq / Ali Niknam · septiembre 2026</span>
+      <span class="mono" style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">
+        Mavis · game theory applied
+      </span>
+    </footer>
+
+  </main>
+
+  <!-- ============ JAVASCRIPT: count-up + reveal-on-scroll ============ -->
+  <script>
+  (function() {
+    // ---- Intersection Observer: reveal + animate bars/sequences ----
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+
+          // Trigger sequential steps inside Stackelberg timeline
+          if (entry.target.id === 'stackTimeline') {
+            const steps = entry.target.querySelectorAll('.stack-step');
+            steps.forEach((step, i) => {
+              setTimeout(() => step.classList.add('in'), i * 380);
+            });
+          }
+
+          // Trigger sequential jurisdictions
+          if (entry.target.id === 'expansion') {
+            const steps = entry.target.querySelectorAll('.exp-step');
+            steps.forEach((step, i) => {
+              setTimeout(() => step.classList.add('in'), i * 280);
+            });
+          }
+
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll(
+      '.reveal, .diagram, .frente, #stackTimeline, #expansion'
+    ).forEach(el => observer.observe(el));
+
+    // ---- Count-up animation for hero stats ----
+    const countEls = document.querySelectorAll('.stat-num[data-count]');
+    function animateCount(el) {
+      const target = parseFloat(el.dataset.count);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      const duration = 1400;
+      const start = performance.now();
+      const decimals = (target % 1 !== 0) ? 1 : 0;
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const value = target * eased;
+        el.textContent = prefix + value.toFixed(decimals) + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+        else el.textContent = prefix + target + suffix;
+      }
+      requestAnimationFrame(tick);
+    }
+    if ('IntersectionObserver' in window) {
+      const statObs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            animateCount(entry.target);
+            statObs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.4 });
+      countEls.forEach(el => statObs.observe(el));
+    } else {
+      countEls.forEach(animateCount);
+    }
+  })();
+  </script>
+</body>
+</html>
