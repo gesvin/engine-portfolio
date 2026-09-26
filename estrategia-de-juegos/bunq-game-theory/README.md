@@ -1,6 +1,6 @@
 # bunq / Ali Niknam · Teoría de juegos en el challenger banking
 
-Análisis原创 que aplica siete herramientas de teoría de juegos al modelo de
+Análisis que aplica siete herramientas de teoría de juegos al modelo de
 negocio de **bunq** y a su founder **Ali Niknam** (Canadian-born, Iranian
 descent, neerlandés de adopción). El foco: cada "frente" expone cómo un
 movimiento deliberado de Ali altera el equilibrio del juego en su industria
