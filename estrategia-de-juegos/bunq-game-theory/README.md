@@ -132,7 +132,7 @@ DNB.
 
 ## Licencia y atribución
 
-Análisis原创 sobre un caso de dominio público. Puedes compartir, reimprimir
+Análisis sobre un caso de dominio público. Puedes compartir, reimprimir
 o adaptar libremente citando la fuente original (*BusinessWise* /
 *de Ondernemer* / *EY* / *Lex Fridman*, según corresponda).
 
